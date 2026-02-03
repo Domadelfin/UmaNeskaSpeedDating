@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Questions · Speed Dating{% endblock %}
+
+{% block content %}
+<section class="flex items-center justify-center px-4 py-12">
+    <div class="mx-auto w-full max-w-2xl space-y-6">
+        <div class="space-y-2 text-center">
+            <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+                Welcome, {{ participant.name|default:"Guest" }}
+            </p>
+            <h1 class="text-3xl font-semibold text-slate-50 sm:text-4xl">
+                Questions coming up next.
+            </h1>
+            <p class="text-sm text-slate-300">
+                We’ve saved your preferences
+                (you identify as <span class="font-medium text-slate-100">{{ participant.gender }}</span>,
+                and want to meet <span class="font-medium text-slate-100">{{ participant.preferred_gender }}</span>).
+                The host can now start the first round.
+            </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-6 text-sm text-slate-200">
+            <p class="mb-3 font-medium text-slate-100">
+                This is just a placeholder screen.
+            </p>
+            <p class="mb-2">
+                Next, we’ll build the part where each round’s question appears here, and you’ll choose your answer
+                with just a tap. Your answers will feed into the matching logic we’ll add on top.
+            </p>
+            <p class="text-xs text-slate-500">
+                For now, you can stop here once you see this page; the identifiers flow is working.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

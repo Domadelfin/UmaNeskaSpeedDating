@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Join Event · Speed Dating{% endblock %}
+
+{% block content %}
+<section class="flex items-center justify-center px-4 py-12">
+    <div class="mx-auto w-full max-w-xl space-y-8">
+        <div class="space-y-3 text-center">
+            <p class="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                Event joined
+            </p>
+            <h1 class="text-3xl font-semibold leading-tight text-slate-50 sm:text-4xl">
+                Tell us who you are.
+            </h1>
+            <p class="text-sm text-slate-300">
+                These details help us match you with better partners during the rounds.
+            </p>
+        </div>
+
+        <form
+            method="post"
+            class="space-y-6 rounded-2xl border border-slate-800 bg-slate-950/60 p-6 shadow-xl shadow-pink-500/10"
+        >
+            {% csrf_token %}
+
+            <div class="space-y-1.5">
+                <label for="name" class="block text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                    Display name
+                </label>
+                <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value="{{ form.name }}"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 placeholder-slate-500 focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
+                    placeholder="e.g. Alex"
+                    required
+                />
+                {% if errors.name %}
+                    <p class="text-xs text-pink-400 mt-1">{{ errors.name }}</p>
+                {% endif %}
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+                <div class="space-y-2">
+                    <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                        I identify as
+                    </p>
+                    <div class="space-y-1.5 text-sm text-slate-200">
+                        <label class="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="woman"
+                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                {% if form.gender == "woman" %}checked{% endif %}
+                            />
+                            <span>Woman</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="man"
+                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                {% if form.gender == "man" %}checked{% endif %}
+                            />
+                            <span>Man</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="nonbinary"
+                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                {% if form.gender == "nonbinary" %}checked{% endif %}
+                            />
+                            <span>Non‑binary / another identity</span>
+                        </label>
+                    </div>
+                    {% if errors.gender %}
+                        <p class="text-xs text-pink-400 mt-1">{{ errors.gender }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                        I’d like to be matched with
+                    </p>
+                    <div class="space-y-1.5 text-sm text-slate-200">
+                        <label class="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="preferred_gender"
+                                value="women"
+                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                {% if form.preferred_gender == "women" %}checked{% endif %}
+                            />
+                            <span>Women</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="preferred_gender"
+                                value="men"
+                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                {% if form.preferred_gender == "men" %}checked{% endif %}
+                            />
+                            <span>Men</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="preferred_gender"
+                                value="any"
+                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                {% if form.preferred_gender == "any" %}checked{% endif %}
+                            />
+                            <span>Anyone</span>
+                        </label>
+                    </div>
+                    {% if errors.preferred_gender %}
+                        <p class="text-xs text-pink-400 mt-1">{{ errors.preferred_gender }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 pt-2">
+                <p class="text-xs text-slate-400">
+                    Your answers are only used for matching during this event.
+                </p>
+                <button
+                    type="submit"
+                    class="inline-flex items-center justify-center rounded-lg bg-pink-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-pink-500/40 transition hover:bg-pink-400"
+                >
+                    Continue to questions
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
