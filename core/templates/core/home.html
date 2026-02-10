@@ -18,6 +18,12 @@
             </p>
         </div>
 
+        {% if errors.event %}
+            <p class="rounded-lg border border-pink-500/40 bg-pink-500/10 px-3 py-2 text-sm text-pink-200">
+                {{ errors.event }}
+            </p>
+        {% endif %}
+
         <form
             method="post"
             class="space-y-6 rounded-2xl border border-slate-800 bg-slate-950/60 p-6 shadow-xl shadow-pink-500/10"
@@ -53,6 +59,7 @@
                                 type="radio"
                                 name="gender"
                                 value="woman"
+                                required
                                 class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
                                 {% if form.gender == "woman" %}checked{% endif %}
                             />
@@ -63,6 +70,7 @@
                                 type="radio"
                                 name="gender"
                                 value="man"
+                                required
                                 class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
                                 {% if form.gender == "man" %}checked{% endif %}
                             />
@@ -73,6 +81,7 @@
                                 type="radio"
                                 name="gender"
                                 value="nonbinary"
+                                required
                                 class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
                                 {% if form.gender == "nonbinary" %}checked{% endif %}
                             />
@@ -94,6 +103,7 @@
                                 type="radio"
                                 name="preferred_gender"
                                 value="women"
+                                required
                                 class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
                                 {% if form.preferred_gender == "women" %}checked{% endif %}
                             />
@@ -104,6 +114,7 @@
                                 type="radio"
                                 name="preferred_gender"
                                 value="men"
+                                required
                                 class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
                                 {% if form.preferred_gender == "men" %}checked{% endif %}
                             />
@@ -114,6 +125,7 @@
                                 type="radio"
                                 name="preferred_gender"
                                 value="any"
+                                required
                                 class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
                                 {% if form.preferred_gender == "any" %}checked{% endif %}
                             />
@@ -138,6 +150,10 @@
                 </button>
             </div>
         </form>
+
+        <div class="text-center text-xs text-slate-400">
+            Already joined? <a class="text-pink-300 hover:text-pink-200" href="{% url 'resume' %}">View your match</a>
+        </div>
     </div>
 </section>
 {% endblock %}

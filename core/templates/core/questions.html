@@ -3,35 +3,183 @@
 {% block title %}Questions · Speed Dating{% endblock %}
 
 {% block content %}
-<section class="flex items-center justify-center px-4 py-12">
-    <div class="mx-auto w-full max-w-2xl space-y-6">
+<section class="flex items-center justify-center px-4 py-6 sm:py-12 min-h-[100dvh] sm:min-h-0">
+    <div class="mx-auto w-full max-w-2xl space-y-6 sm:space-y-8 pb-8">
+
+        <!-- Header -->
         <div class="space-y-2 text-center">
             <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
-                Welcome, {{ participant.name|default:"Guest" }}
+                Welcome, {{ participant.nickname|default:"Guest" }}
             </p>
-            <h1 class="text-3xl font-semibold text-slate-50 sm:text-4xl">
-                Questions coming up next.
+
+            <h1 class="text-2xl font-semibold text-slate-50 sm:text-4xl">
+                Answer a few questions
             </h1>
+
             <p class="text-sm text-slate-300">
-                We’ve saved your preferences
-                (you identify as <span class="font-medium text-slate-100">{{ participant.gender }}</span>,
-                and want to meet <span class="font-medium text-slate-100">{{ participant.preferred_gender }}</span>).
-                The host can now start the first round.
+                You identify as
+                <span class="font-medium text-slate-100">{{ participant.gender_identity }}</span>,
+                and want to meet
+                <span class="font-medium text-slate-100">
+                    {{ participant.interested_in|join:", " }}
+                </span>.
             </p>
         </div>
 
-        <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-6 text-sm text-slate-200">
-            <p class="mb-3 font-medium text-slate-100">
-                This is just a placeholder screen.
-            </p>
-            <p class="mb-2">
-                Next, we’ll build the part where each round’s question appears here, and you’ll choose your answer
-                with just a tap. Your answers will feed into the matching logic we’ll add on top.
-            </p>
-            <p class="text-xs text-slate-500">
-                For now, you can stop here once you see this page; the identifiers flow is working.
-            </p>
-        </div>
+        <!-- Questions Form -->
+        <form method="post" class="space-y-5 sm:space-y-6">
+            {% csrf_token %}
+
+            {% for question in questions %}
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 sm:p-5 space-y-3">
+
+                    <label class="block font-medium text-slate-100 text-base sm:text-lg">
+                        {{ question.text }}
+                    </label>
+
+                    {% if question.type == "text" %}
+                        <input
+                            type="text"
+                            name="question_{{ question.id }}"
+                            class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3.5 text-base text-slate-100 min-h-[48px] touch-manipulation"
+                            required
+                        />
+
+                    {% elif question.type == "number" %}
+                        <input
+                            type="number"
+                            name="question_{{ question.id }}"
+                            class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3.5 text-base text-slate-100 min-h-[48px] touch-manipulation"
+                        />
+
+                    {% elif question.type == "date" %}
+                        <input
+                            type="date"
+                            name="question_{{ question.id }}"
+                            class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3.5 text-base text-slate-100 min-h-[48px] touch-manipulation"
+                        />
+
+                    {% elif question.type == "choice" %}
+                        <div class="space-y-2">
+                            {% for opt in question.options.all %}
+                                <label class="flex items-center gap-3 min-h-[48px] px-3 py-2 rounded-xl hover:bg-slate-800/50 active:bg-slate-800 touch-manipulation cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="question_{{ question.id }}"
+                                        value="{{ opt.value|default:opt.text }}"
+                                        class="w-5 h-5 shrink-0"
+                                        required
+                                    />
+                                    <span class="text-base">{{ opt.text }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+
+                    {% elif question.type == "multiple_choice" %}
+                        <div class="space-y-2">
+                            {% for opt in question.options.all %}
+                                <label class="flex items-center gap-3 min-h-[48px] px-3 py-2 rounded-xl hover:bg-slate-800/50 active:bg-slate-800 touch-manipulation cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        name="question_{{ question.id }}[]"
+                                        value="{{ opt.value|default:opt.text }}"
+                                        class="w-5 h-5 shrink-0"
+                                    />
+                                    <span class="text-base">{{ opt.text }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+
+                    {% elif question.type == "dropdown" %}
+                        <div class="dropdown-scroll-wrap relative" data-dropdown-for="question_{{ question.id }}">
+                            <input type="hidden" name="question_{{ question.id }}" value="" required data-dropdown-input>
+                            <button
+                                type="button"
+                                class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3.5 text-left text-base text-slate-100 min-h-[48px] touch-manipulation flex items-center justify-between gap-2"
+                                data-dropdown-trigger
+                                aria-haspopup="listbox"
+                                aria-expanded="false"
+                                aria-label="Choose option"
+                            >
+                                <span data-dropdown-label class="truncate">Choose one…</span>
+                                <svg class="w-5 h-5 shrink-0 text-slate-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" data-dropdown-chevron>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div
+                                class="absolute left-0 right-0 top-full z-10 mt-1 rounded-xl border border-slate-700 bg-slate-900 shadow-xl overflow-hidden max-h-[min(16rem,60vh)] overflow-y-auto overscroll-contain"
+                                role="listbox"
+                                hidden
+                                data-dropdown-panel
+                            >
+                                {% for opt in question.options.all %}
+                                    <button
+                                        type="button"
+                                        role="option"
+                                        class="w-full px-4 py-3.5 text-left text-base text-slate-100 hover:bg-slate-800 active:bg-slate-700 touch-manipulation border-b border-slate-800 last:border-0"
+                                        data-value="{{ opt.value|default:opt.text }}"
+                                        data-text="{{ opt.text }}"
+                                    >
+                                        {{ opt.text }}
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <!-- Submit -->
+            <button
+                type="submit"
+                class="w-full rounded-xl bg-pink-600 py-4 sm:py-3 font-semibold text-white text-base hover:bg-pink-500 active:bg-pink-700 transition min-h-[52px] touch-manipulation"
+            >
+                Submit Answers
+            </button>
+
+        </form>
+
     </div>
 </section>
+
+<script>
+(function() {
+    document.querySelectorAll('[data-dropdown-for]').forEach(function(wrap) {
+        var input = wrap.querySelector('[data-dropdown-input]');
+        var trigger = wrap.querySelector('[data-dropdown-trigger]');
+        var label = wrap.querySelector('[data-dropdown-label]');
+        var panel = wrap.querySelector('[data-dropdown-panel]');
+        var chevron = wrap.querySelector('[data-dropdown-chevron]');
+        var placeholder = 'Choose one…';
+
+        function open() {
+            panel.hidden = false;
+            trigger.setAttribute('aria-expanded', 'true');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+        }
+        function close() {
+            panel.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+            if (chevron) chevron.style.transform = '';
+        }
+        function isOpen() { return !panel.hidden; }
+
+        trigger.addEventListener('click', function() {
+            if (isOpen()) close(); else open();
+        });
+
+        wrap.querySelectorAll('[role="option"]').forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                input.value = opt.getAttribute('data-value');
+                label.textContent = opt.getAttribute('data-text');
+                close();
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (isOpen() && !wrap.contains(e.target)) close();
+        });
+    });
+})();
+</script>
 {% endblock %}

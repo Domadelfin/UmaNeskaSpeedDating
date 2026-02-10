@@ -62,19 +62,25 @@ class Participant(models.Model):
 
 
 class Question(models.Model):
-
+    
     QUESTION_TYPES = [
         ("text", "Text"),
         ("choice", "Single Choice"),
         ("multiple_choice", "Multiple Choice"),
+        ("dropdown", "Dropdown"),
         ("number", "Number"),
         ("date", "Date"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.TextField()
+
     type = models.CharField(max_length=20, choices=QUESTION_TYPES)
-    options = models.JSONField(null=True, blank=True)
+    weight = models.FloatField(default=1.0)
+    is_scored = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.text[:60]
 
 
 class Answer(models.Model):
@@ -93,3 +99,20 @@ class Answer(models.Model):
     )
 
     value = models.TextField()
+    value_json = models.JSONField(null=True, blank=True)
+
+class Option(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    question = models.ForeignKey(
+        Question,
+        related_name="options",
+        on_delete=models.CASCADE
+    )
+
+    text = models.CharField(max_length=200)
+    value = models.CharField(max_length=50, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.text

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Revealing Matches · Speed Dating{% endblock %}
+
+{% block content %}
+<section class="flex items-center justify-center px-4 py-10 sm:py-16 min-h-[100dvh] sm:min-h-0">
+    <div class="mx-auto w-full max-w-2xl text-center space-y-6">
+        <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+            {{ event.name }} · {{ event.code }}
+        </p>
+
+        <h1 class="text-3xl font-semibold text-slate-50 sm:text-5xl">
+            Matches reveal in
+        </h1>
+
+        <div
+            id="countdown"
+            class="text-6xl sm:text-7xl font-semibold tracking-wide text-emerald-300"
+            data-seconds="8"
+        >
+            8
+        </div>
+
+        <p class="text-sm text-slate-300">
+            Ask participants to refresh their profile page when the timer ends.
+        </p>
+
+        <div id="reveal-message" class="hidden text-base text-slate-100">
+            Matches are now revealed. Participants can view their match on their profile.
+        </div>
+    </div>
+</section>
+
+<script>
+(function() {
+    var el = document.getElementById("countdown");
+    var reveal = document.getElementById("reveal-message");
+    var remaining = parseInt(el.getAttribute("data-seconds"), 10) || 8;
+
+    function tick() {
+        if (remaining <= 0) {
+            el.textContent = "Now";
+            reveal.classList.remove("hidden");
+            return;
+        }
+        el.textContent = remaining;
+        remaining -= 1;
+        setTimeout(tick, 1000);
+    }
+
+    tick();
+})();
+</script>
+{% endblock %}
