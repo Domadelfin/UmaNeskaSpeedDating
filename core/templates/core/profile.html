@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Your Match · Speed Dating{% endblock %}
+
+{% block content %}
+<section class="flex items-center justify-center px-4 py-10 sm:py-16 min-h-[100dvh] sm:min-h-0">
+    <div class="mx-auto w-full max-w-2xl space-y-6">
+        <div class="space-y-2 text-center">
+            <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+                Welcome back, {{ participant.nickname }}
+            </p>
+            <h1 class="text-3xl font-semibold text-slate-50 sm:text-4xl">
+                Your match
+            </h1>
+            <p class="text-sm text-slate-300">
+                Event: <span class="text-slate-100 font-medium">{{ event.name }}</span>
+                · Code: <span class="text-slate-100 font-medium">{{ event.code }}</span>
+            </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 sm:p-8 text-center space-y-3">
+            {% if event.status == "matching" %}
+                <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+                    Get ready
+                </p>
+                <p class="text-sm text-slate-300">
+                    The host is preparing to reveal matches.
+                </p>
+                <div
+                    id="countdown"
+                    class="text-5xl sm:text-6xl font-semibold tracking-wide text-emerald-300"
+                    data-seconds="8"
+                >
+                    8
+                </div>
+                <p class="text-xs text-slate-500">
+                    Keep this page open. Your match will appear after the reveal.
+                </p>
+            {% elif event.status != "revealed" %}
+                <p class="text-sm text-slate-300">
+                    Matches have not been revealed yet.
+                </p>
+                <p class="text-xs text-slate-500">
+                    Current status: {{ event.get_status_display }}
+                </p>
+            {% else %}
+                {% if match %}
+                    <p class="text-xs font-medium uppercase tracking-[0.2em] text-emerald-300">
+                        It's a match
+                    </p>
+                    <p class="text-3xl font-semibold text-slate-50">
+                        {{ match.nickname }}
+                    </p>
+                    <p class="text-sm text-slate-300">
+                        Find them and say hello.
+                    </p>
+                {% else %}
+                    <p class="text-sm text-slate-300">
+                        Your match isn't ready yet. Check back soon.
+                    </p>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 text-xs text-slate-400">
+            <a
+                href="{% url 'resume' %}"
+                class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 hover:bg-slate-800"
+            >
+                Not you? Use another nickname
+            </a>
+            <span>
+                Keep this page open to refresh later.
+            </span>
+        </div>
+    </div>
+</section>
+
+<script>
+(function() {
+    var el = document.getElementById("countdown");
+    if (!el) return;
+
+    var remaining = parseInt(el.getAttribute("data-seconds"), 10) || 8;
+
+    function tick() {
+        if (remaining <= 0) {
+            el.textContent = "Now";
+            setTimeout(function() { window.location.reload(); }, 500);
+            return;
+        }
+        el.textContent = remaining;
+        remaining -= 1;
+        setTimeout(tick, 1000);
+    }
+
+    tick();
+})();
+</script>
+{% endblock %}

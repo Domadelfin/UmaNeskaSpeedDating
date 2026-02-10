@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, Participant, Question, Answer
+from .models import Event, Participant, Question, Answer, Option
 # Register your models here.
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
@@ -22,11 +22,16 @@ class ParticipantAdmin(admin.ModelAdmin):
     search_fields = ("nickname",)
     autocomplete_fields = ("matched_with",)
 
+class OptionInline(admin.TabularInline):
+    model = Option
+    extra = 4
+
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ("text", "type")
-    list_filter = ("type",)
+    list_display = ("text", "type", "weight", "is_scored")
+    list_filter = ("type", "is_scored")
     search_fields = ("text",)
+    inlines = [OptionInline]
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):

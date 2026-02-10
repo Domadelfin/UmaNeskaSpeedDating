@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Host Dashboard · Speed Dating{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-5xl px-4 py-10 space-y-8">
+
+    <!-- Header -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-semibold text-slate-50">
+                Host Dashboard
+            </h1>
+            <p class="text-sm text-slate-400">
+                Manage events, participants, and matching.
+            </p>
+        </div>
+
+        <a
+            href="/admin/"
+            class="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm hover:bg-slate-800"
+        >
+            Open Django Admin
+        </a>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="grid gap-6 md:grid-cols-2">
+
+        {% for event in events %}
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 space-y-4">
+
+            <div class="flex items-start justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-slate-100">
+                        {{ event.name }}
+                    </h2>
+                    <p class="text-xs text-slate-500">
+                        Code: {{ event.code }}
+                    </p>
+                </div>
+
+                <span class="rounded-full px-2.5 py-1 text-xs font-medium
+                    {% if event.status == 'collecting' %} bg-emerald-500/10 text-emerald-400
+                    {% elif event.status == 'matching' %} bg-yellow-500/10 text-yellow-400
+                    {% elif event.status == 'revealed' %} bg-pink-500/10 text-pink-400
+                    {% else %} bg-slate-700 text-slate-300 {% endif %}
+                ">
+                    {{ event.get_status_display }}
+                </span>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-3 text-center text-sm">
+                <div class="rounded-lg bg-slate-900 p-3">
+                    <p class="text-xs text-slate-400">Participants</p>
+                    <p class="font-semibold">{{ event.participants.count }}</p>
+                </div>
+
+                <div class="rounded-lg bg-slate-900 p-3">
+                    <p class="text-xs text-slate-400">Answered</p>
+                    <p class="font-semibold">
+                        {{ event.participants.filter(answers_complete=True).count }}
+                    </p>
+                </div>
+
+                <div class="rounded-lg bg-slate-900 p-3">
+                    <p class="text-xs text-slate-400">Status</p>
+                    <p class="font-semibold">{{ event.status }}</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+                <form method="post" action="{% url 'admin_update_status' event.id %}" class="flex items-center gap-2">
+                    {% csrf_token %}
+                    <label class="text-xs text-slate-400">Status</label>
+                    <select
+                        name="status"
+                        class="rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
+                    >
+                        {% for value,label in event.STATUS_CHOICES %}
+                            <option value="{{ value }}" {% if event.status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button
+                        class="rounded-lg bg-pink-500 px-4 py-2 text-xs font-semibold hover:bg-pink-400"
+                    >
+                        Update
+                    </button>
+                </form>
+            </div>
+
+        </div>
+        {% empty %}
+        <p class="text-slate-500">No events created yet.</p>
+        {% endfor %}
+
+    </div>
+
+</section>
+{% endblock %}
