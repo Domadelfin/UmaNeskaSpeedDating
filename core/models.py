@@ -76,6 +76,13 @@ class Participant(models.Model):
         on_delete=models.SET_NULL,
         related_name="matched_by",
     )
+    matched_with_secondary = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="matched_by_secondary",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 

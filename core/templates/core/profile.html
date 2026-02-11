@@ -1,71 +1,71 @@
 {% extends "base.html" %}
 
-{% block title %}Your Match · Speed Dating{% endblock %}
+{% block title %}Your Match ? Speed Dating{% endblock %}
 
 {% block content %}
 <section class="flex items-center justify-center px-4 py-10 sm:py-16 min-h-[100dvh] sm:min-h-0">
     <div class="mx-auto w-full max-w-2xl space-y-6">
         <div class="space-y-2 text-center">
-            <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+            <p class="text-xs font-medium uppercase tracking-[0.2em] cny-text-accent">
                 Welcome, {{ participant.nickname }}!
             </p>
-            <p class="text-sm text-slate-300">
-                Event: <span class="text-slate-100 font-medium">{{ event.name }}</span>
-                · Code: <span class="text-slate-100 font-medium">{{ event.code }}</span>
+            <p class="text-sm cny-text-muted">
+                Event: <span class="font-medium cny-text-gold">{{ event.name }}</span>
+                ? Code: <span class="font-medium cny-text-gold">{{ event.code }}</span>
             </p>
         </div>
 
         <div
             id="match-panel"
-            class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 sm:p-8 text-center space-y-3"
+            class="rounded-2xl cny-card p-6 sm:p-8 text-center space-y-3"
             data-status="{{ event.status }}"
             data-match="{{ match.nickname|default:'' }}"
         >
             <div id="panel-body">
                 {% if event.status == "matching" %}
-                    <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+                    <p class="text-xs font-medium uppercase tracking-[0.2em] cny-text-accent">
                         Hang tight
                     </p>
-                    <p class="text-sm text-slate-300">
+                    <p class="text-sm cny-text-muted">
                         The host is preparing to reveal matches.
                     </p>
-                    <p class="text-xs text-slate-500">
+                    <p class="text-xs cny-text-muted">
                         This will update automatically when matches are revealed.
                     </p>
                 {% elif event.status != "revealed" %}
-                    <p class="text-sm text-slate-300">
+                    <p class="text-sm cny-text-muted">
                         Matches have not been revealed yet.
                     </p>
-                    <p class="text-xs text-slate-500">
+                    <p class="text-xs cny-text-muted">
                         Current status: {{ event.get_status_display }}
                     </p>
                 {% else %}
                     {% if match %}
                         <div id="reveal-countdown" class="space-y-3">
-                            <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+                            <p class="text-xs font-medium uppercase tracking-[0.2em] cny-text-accent">
                                 Revealing match
                             </p>
                             <div
                                 id="countdown"
-                                class="text-5xl sm:text-6xl font-semibold tracking-wide text-emerald-300"
+                                class="text-5xl sm:text-6xl font-semibold tracking-wide cny-text-gold"
                                 data-seconds="8"
                             >
                                 8
                             </div>
                         </div>
                         <div id="match-result" class="space-y-2 hidden">
-                            <p class="text-xs font-medium uppercase tracking-[0.2em] text-emerald-300">
+                            <p class="text-xs font-medium uppercase tracking-[0.2em] cny-text-accent">
                                 It's a match
                             </p>
-                            <p class="text-3xl font-semibold text-slate-50">
+                            <p class="text-3xl font-semibold">
                                 {{ match.nickname }}
                             </p>
-                            <p class="text-sm text-slate-300">
+                            <p class="text-sm cny-text-muted">
                                 Find them and say hello.
                             </p>
                         </div>
                     {% else %}
-                        <p class="text-sm text-slate-300">
+                        <p class="text-sm cny-text-muted">
                             Your match isn't ready yet. Check back soon.
                         </p>
                     {% endif %}
@@ -73,10 +73,10 @@
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 text-xs text-slate-400">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 text-xs cny-text-muted">
             <a
                 href="{% url 'resume' %}"
-                class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 hover:bg-slate-800"
+                class="rounded-full border px-4 py-2 cny-card"
             >
                 Not you? Use another nickname
             </a>

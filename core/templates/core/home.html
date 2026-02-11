@@ -1,37 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Join Event - Speed Dating{% endblock %}
+{% block title %}Join Event ? Speed Dating{% endblock %}
 
 {% block content %}
 <section class="flex items-center justify-center px-4 py-12">
     <div class="mx-auto w-full max-w-xl space-y-8">
         <div class="space-y-3 text-center">
-            <p class="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+            <p class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] cny-chip">
+                <span class="h-1.5 w-1.5 rounded-full" style="background: var(--cny-gold-2);"></span>
                 Event joined
             </p>
-            <h1 class="text-3xl font-semibold leading-tight text-slate-50 sm:text-4xl">
+            <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">
                 Tell us who you are.
             </h1>
-            <p class="text-sm text-slate-300">
+            <p class="text-sm cny-text-muted">
                 These details help us match you with better partners during the rounds.
             </p>
         </div>
 
         {% if errors.event %}
-            <p class="rounded-lg border border-pink-500/40 bg-pink-500/10 px-3 py-2 text-sm text-pink-200">
+            <p class="rounded-lg border px-3 py-2 text-sm cny-chip">
                 {{ errors.event }}
             </p>
         {% endif %}
 
         <form
             method="post"
-            class="space-y-6 rounded-2xl border border-slate-800 bg-slate-950/60 p-6 shadow-xl shadow-pink-500/10"
+            class="space-y-6 rounded-2xl p-6 cny-card"
         >
             {% csrf_token %}
 
             <div class="space-y-1.5">
-                <label for="name" class="block text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                <label for="name" class="block text-xs font-medium uppercase tracking-[0.18em] cny-text-muted">
                     Display name
                 </label>
                 <input
@@ -39,21 +39,22 @@
                     name="name"
                     id="name"
                     value="{{ form.name }}"
-                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 placeholder-slate-500 focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
+                    class="w-full rounded-lg border px-3 py-2 text-sm placeholder:cny-text-muted"
+                    style="background: #fff; border-color: var(--cny-bg-2);"
                     placeholder="e.g. Alex"
                     required
                 />
                 {% if errors.name %}
-                    <p class="text-xs text-pink-400 mt-1">{{ errors.name }}</p>
+                    <p class="text-xs cny-text-accent mt-1">{{ errors.name }}</p>
                 {% endif %}
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
                 <div class="space-y-2">
-                    <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                    <p class="text-xs font-medium uppercase tracking-[0.18em] cny-text-muted">
                         I identify as
                     </p>
-                    <div class="space-y-1.5 text-sm text-slate-200">
+                    <div class="space-y-1.5 text-sm">
                         {% for value,label in gender_choices %}
                             <label class="flex items-center gap-2">
                                 <input
@@ -61,7 +62,8 @@
                                     name="gender"
                                     value="{{ value }}"
                                     required
-                                    class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                    class="h-3.5 w-3.5 rounded"
+                                    style="border-color: var(--cny-bg-2); accent-color: var(--cny-red-1);"
                                     {% if form.gender == value %}checked{% endif %}
                                 />
                                 <span>{{ label }}</span>
@@ -69,15 +71,15 @@
                         {% endfor %}
                     </div>
                     {% if errors.gender %}
-                        <p class="text-xs text-pink-400 mt-1">{{ errors.gender }}</p>
+                        <p class="text-xs cny-text-accent mt-1">{{ errors.gender }}</p>
                     {% endif %}
                 </div>
 
                 <div class="space-y-2">
-                    <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                    <p class="text-xs font-medium uppercase tracking-[0.18em] cny-text-muted">
                         I'd like to be matched with
                     </p>
-                    <div class="space-y-1.5 text-sm text-slate-200">
+                    <div class="space-y-1.5 text-sm">
                         {% for value,label in interest_choices %}
                             <label class="flex items-center gap-2">
                                 <input
@@ -85,7 +87,8 @@
                                     name="preferred_gender"
                                     value="{{ value }}"
                                     required
-                                    class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                    class="h-3.5 w-3.5 rounded"
+                                    style="border-color: var(--cny-bg-2); accent-color: var(--cny-red-1);"
                                     {% if form.preferred_gender == value %}checked{% endif %}
                                 />
                                 <span>{{ label }}</span>
@@ -93,16 +96,16 @@
                         {% endfor %}
                     </div>
                     {% if errors.preferred_gender %}
-                        <p class="text-xs text-pink-400 mt-1">{{ errors.preferred_gender }}</p>
+                        <p class="text-xs cny-text-accent mt-1">{{ errors.preferred_gender }}</p>
                     {% endif %}
                 </div>
             </div>
 
             <div class="space-y-2">
-                <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                <p class="text-xs font-medium uppercase tracking-[0.18em] cny-text-muted">
                     Bracelet color
                 </p>
-                <div class="grid gap-2 sm:grid-cols-2 text-sm text-slate-200">
+                <div class="grid gap-2 sm:grid-cols-2 text-sm">
                     {% for value,label in bracelet_choices %}
                         <label class="flex items-center gap-2">
                             <input
@@ -110,7 +113,8 @@
                                 name="bracelet"
                                 value="{{ value }}"
                                 required
-                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                class="h-3.5 w-3.5 rounded"
+                                style="border-color: var(--cny-bg-2); accent-color: var(--cny-red-1);"
                                 {% if form.bracelet == value %}checked{% endif %}
                             />
                             <span>{{ label }}</span>
@@ -118,25 +122,25 @@
                     {% endfor %}
                 </div>
                 {% if errors.bracelet %}
-                    <p class="text-xs text-pink-400 mt-1">{{ errors.bracelet }}</p>
+                    <p class="text-xs cny-text-accent mt-1">{{ errors.bracelet }}</p>
                 {% endif %}
             </div>
 
             <div class="flex items-center justify-between gap-3 pt-2">
-                <p class="text-xs text-slate-400">
+                <p class="text-xs cny-text-muted">
                     Your answers are only used for matching during this event.
                 </p>
                 <button
                     type="submit"
-                    class="inline-flex items-center justify-center rounded-lg bg-pink-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-pink-500/40 transition hover:bg-pink-400"
+                    class="inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold cny-btn"
                 >
                     Continue to questions
                 </button>
             </div>
         </form>
 
-        <div class="text-center text-xs text-slate-400">
-            Already joined? <a class="text-pink-300 hover:text-pink-200" href="{% url 'resume' %}">View your match</a>
+        <div class="text-center text-xs cny-text-muted">
+            Already joined? <a class="cny-text-accent" href="{% url 'resume' %}">View your match</a>
         </div>
     </div>
 </section>

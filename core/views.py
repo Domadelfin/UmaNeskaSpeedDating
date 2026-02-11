@@ -250,6 +250,7 @@ def profile(request):
 
     event = participant.event
     match = participant.matched_with
+    match_secondary = participant.matched_with_secondary
 
     return render(
         request,
@@ -258,6 +259,7 @@ def profile(request):
             "participant": participant,
             "event": event,
             "match": match,
+            "match_secondary": match_secondary,
         },
     )
 
@@ -273,11 +275,13 @@ def profile_status(request):
 
     event = participant.event
     match = participant.matched_with
+    match_secondary = participant.matched_with_secondary
 
     return JsonResponse({
         "event_status": event.status,
         "event_status_label": event.get_status_display(),
         "match_nickname": match.nickname if match else None,
+        "match_secondary_nickname": match_secondary.nickname if match_secondary else None,
     })
 
    
@@ -414,7 +418,10 @@ def admin_run_matching(request, event_id):
     matching = nx.algorithms.matching.max_weight_matching(graph, maxcardinality=True)
 
     with transaction.atomic():
-        models.Participant.objects.filter(event=event).update(matched_with=None)
+        models.Participant.objects.filter(event=event).update(
+            matched_with=None,
+            matched_with_secondary=None,
+        )
         for a_id, b_id in matching:
             a = participant_by_id.get(a_id)
             b = participant_by_id.get(b_id)
@@ -424,5 +431,53 @@ def admin_run_matching(request, event_id):
             b.matched_with = a
             a.save(update_fields=["matched_with"])
             b.save(update_fields=["matched_with"])
+
+        matched_ids = set()
+        for a_id, b_id in matching:
+            matched_ids.add(a_id)
+            matched_ids.add(b_id)
+
+        unmatched = [p for p in participants if p.id not in matched_ids]
+
+        if unmatched:
+            for p in unmatched:
+                best = None
+                best_score = -1
+
+                for candidate in participants:
+                    if candidate.id == p.id:
+                        continue
+                    if not is_compatible(p, candidate):
+                        continue
+
+                    candidate_answers = answers_by_participant.get(candidate.id, {})
+                    p_answers = answers_by_participant.get(p.id, {})
+                    score = 0.0
+                    for question_id, p_answer in p_answers.items():
+                        question = p_answer.question
+                        if not question.is_scored:
+                            continue
+                        c_answer = candidate_answers.get(question_id)
+                        similarity = answer_similarity(p_answer, c_answer, question)
+                        score += similarity * question.weight
+
+                    if score > best_score:
+                        best_score = score
+                        best = candidate
+
+                if best:
+                    if best.matched_with is None:
+                        best.matched_with = p
+                        best.save(update_fields=["matched_with"])
+                    elif best.matched_with_secondary is None:
+                        best.matched_with_secondary = p
+                        best.save(update_fields=["matched_with_secondary"])
+
+                    if p.matched_with is None:
+                        p.matched_with = best
+                        p.save(update_fields=["matched_with"])
+                    elif p.matched_with_secondary is None:
+                        p.matched_with_secondary = best
+                        p.save(update_fields=["matched_with_secondary"])
 
     return redirect(reverse("admin"))

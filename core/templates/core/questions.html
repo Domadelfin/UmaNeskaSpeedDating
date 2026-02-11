@@ -1,39 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Questions · Speed Dating{% endblock %}
+{% block title %}Questions ? Speed Dating{% endblock %}
 
 {% block content %}
 <section class="flex items-center justify-center px-4 py-6 sm:py-12 min-h-[100dvh] sm:min-h-0">
     <div class="mx-auto w-full max-w-2xl space-y-6 sm:space-y-8 pb-8">
 
-        <!-- Header -->
         <div class="space-y-2 text-center">
-            <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+            <p class="text-xs font-medium uppercase tracking-[0.2em] cny-text-accent">
                 Welcome, {{ participant.nickname|default:"Guest" }}
             </p>
 
-            <h1 class="text-2xl font-semibold text-slate-50 sm:text-4xl">
+            <h1 class="text-2xl font-semibold sm:text-4xl">
                 Answer a few questions
             </h1>
 
-            <p class="text-sm text-slate-300">
+            <p class="text-sm cny-text-muted">
                 You identify as
-                <span class="font-medium text-slate-100">{{ participant.get_gender_identity_display }}</span>,
+                <span class="font-medium cny-text-gold">{{ participant.get_gender_identity_display }}</span>,
                 and want to meet
-                <span class="font-medium text-slate-100">
+                <span class="font-medium cny-text-gold">
                     {{ participant.interested_in_labels|join:", " }}
                 </span>.
             </p>
         </div>
 
-        <!-- Questions Form -->
         <form method="post" class="space-y-5 sm:space-y-6">
             {% csrf_token %}
 
             {% for question in questions %}
-                <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 sm:p-5 space-y-3">
+                <div class="rounded-2xl cny-card p-4 sm:p-5 space-y-3">
 
-                    <label class="block font-medium text-slate-100 text-base sm:text-lg">
+                    <label class="block font-medium text-base sm:text-lg">
                         {{ question.text }}
                     </label>
 
@@ -41,7 +39,8 @@
                         <input
                             type="text"
                             name="question_{{ question.id }}"
-                            class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3.5 text-base text-slate-100 min-h-[48px] touch-manipulation"
+                            class="w-full rounded-xl border px-4 py-3.5 text-base min-h-[48px] touch-manipulation"
+                            style="background: #fff; border-color: var(--cny-bg-2);"
                             required
                         />
 
@@ -49,25 +48,28 @@
                         <input
                             type="number"
                             name="question_{{ question.id }}"
-                            class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3.5 text-base text-slate-100 min-h-[48px] touch-manipulation"
+                            class="w-full rounded-xl border px-4 py-3.5 text-base min-h-[48px] touch-manipulation"
+                            style="background: #fff; border-color: var(--cny-bg-2);"
                         />
 
                     {% elif question.type == "date" %}
                         <input
                             type="date"
                             name="question_{{ question.id }}"
-                            class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3.5 text-base text-slate-100 min-h-[48px] touch-manipulation"
+                            class="w-full rounded-xl border px-4 py-3.5 text-base min-h-[48px] touch-manipulation"
+                            style="background: #fff; border-color: var(--cny-bg-2);"
                         />
 
                     {% elif question.type == "choice" %}
                         <div class="space-y-2">
                             {% for opt in question.options.all %}
-                                <label class="flex items-center gap-3 min-h-[48px] px-3 py-2 rounded-xl hover:bg-slate-800/50 active:bg-slate-800 touch-manipulation cursor-pointer">
+                                <label class="flex items-center gap-3 min-h-[48px] px-3 py-2 rounded-xl hover:bg-white/70 active:bg-white touch-manipulation cursor-pointer">
                                     <input
                                         type="radio"
                                         name="question_{{ question.id }}"
                                         value="{{ opt.value|default:opt.text }}"
                                         class="w-5 h-5 shrink-0"
+                                        style="accent-color: var(--cny-red-1);"
                                         required
                                     />
                                     <span class="text-base">{{ opt.text }}</span>
@@ -78,12 +80,13 @@
                     {% elif question.type == "multiple_choice" %}
                         <div class="space-y-2">
                             {% for opt in question.options.all %}
-                                <label class="flex items-center gap-3 min-h-[48px] px-3 py-2 rounded-xl hover:bg-slate-800/50 active:bg-slate-800 touch-manipulation cursor-pointer">
+                                <label class="flex items-center gap-3 min-h-[48px] px-3 py-2 rounded-xl hover:bg-white/70 active:bg-white touch-manipulation cursor-pointer">
                                     <input
                                         type="checkbox"
                                         name="question_{{ question.id }}[]"
                                         value="{{ opt.value|default:opt.text }}"
                                         class="w-5 h-5 shrink-0"
+                                        style="accent-color: var(--cny-red-1);"
                                     />
                                     <span class="text-base">{{ opt.text }}</span>
                                 </label>
@@ -95,19 +98,21 @@
                             <input type="hidden" name="question_{{ question.id }}" value="" required data-dropdown-input>
                             <button
                                 type="button"
-                                class="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3.5 text-left text-base text-slate-100 min-h-[48px] touch-manipulation flex items-center justify-between gap-2"
+                                class="w-full rounded-xl border px-4 py-3.5 text-left text-base min-h-[48px] touch-manipulation flex items-center justify-between gap-2"
+                                style="background: #fff; border-color: var(--cny-bg-2);"
                                 data-dropdown-trigger
                                 aria-haspopup="listbox"
                                 aria-expanded="false"
                                 aria-label="Choose option"
                             >
-                                <span data-dropdown-label class="truncate">Choose one…</span>
-                                <svg class="w-5 h-5 shrink-0 text-slate-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" data-dropdown-chevron>
+                                <span data-dropdown-label class="truncate">Choose one?</span>
+                                <svg class="w-5 h-5 shrink-0 cny-text-muted transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" data-dropdown-chevron>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
                             <div
-                                class="absolute left-0 right-0 top-full z-10 mt-1 rounded-xl border border-slate-700 bg-slate-900 shadow-xl overflow-hidden max-h-[min(16rem,60vh)] overflow-y-auto overscroll-contain"
+                                class="absolute left-0 right-0 top-full z-10 mt-1 rounded-xl border shadow-xl overflow-hidden max-h-[min(16rem,60vh)] overflow-y-auto overscroll-contain"
+                                style="background: #fff; border-color: var(--cny-bg-2);"
                                 role="listbox"
                                 hidden
                                 data-dropdown-panel
@@ -116,7 +121,8 @@
                                     <button
                                         type="button"
                                         role="option"
-                                        class="w-full px-4 py-3.5 text-left text-base text-slate-100 hover:bg-slate-800 active:bg-slate-700 touch-manipulation border-b border-slate-800 last:border-0"
+                                        class="w-full px-4 py-3.5 text-left text-base hover:bg-white/70 active:bg-white touch-manipulation border-b last:border-0"
+                                        style="border-color: var(--cny-bg-2);"
                                         data-value="{{ opt.value|default:opt.text }}"
                                         data-text="{{ opt.text }}"
                                     >
@@ -129,10 +135,9 @@
                 </div>
             {% endfor %}
 
-            <!-- Submit -->
             <button
                 type="submit"
-                class="w-full rounded-xl bg-pink-600 py-4 sm:py-3 font-semibold text-white text-base hover:bg-pink-500 active:bg-pink-700 transition min-h-[52px] touch-manipulation"
+                class="w-full rounded-xl py-4 sm:py-3 font-semibold text-base transition min-h-[52px] touch-manipulation cny-btn"
             >
                 Submit Answers
             </button>
@@ -150,7 +155,7 @@
         var label = wrap.querySelector('[data-dropdown-label]');
         var panel = wrap.querySelector('[data-dropdown-panel]');
         var chevron = wrap.querySelector('[data-dropdown-chevron]');
-        var placeholder = 'Choose one…';
+        var placeholder = 'Choose one?';
 
         function open() {
             panel.hidden = false;

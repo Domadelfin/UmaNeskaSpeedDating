@@ -1,30 +1,30 @@
 {% extends "base.html" %}
 
-{% block title %}Find Your Profile · Speed Dating{% endblock %}
+{% block title %}Find Your Profile ? Speed Dating{% endblock %}
 
 {% block content %}
 <section class="flex items-center justify-center px-4 py-12 min-h-[100dvh] sm:min-h-0">
     <div class="mx-auto w-full max-w-xl space-y-6">
         <div class="space-y-3 text-center">
-            <p class="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+            <p class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] cny-chip">
                 Resume your profile
             </p>
-            <h1 class="text-3xl font-semibold leading-tight text-slate-50 sm:text-4xl">
+            <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">
                 Find your match
             </h1>
-            <p class="text-sm text-slate-300">
+            <p class="text-sm cny-text-muted">
                 Enter the event code and your nickname to see your match once it is revealed.
             </p>
         </div>
 
         <form
             method="post"
-            class="space-y-6 rounded-2xl border border-slate-800 bg-slate-950/60 p-6 shadow-xl shadow-pink-500/10"
+            class="space-y-6 rounded-2xl p-6 cny-card"
         >
             {% csrf_token %}
 
             <div class="space-y-1.5">
-                <label for="event_code" class="block text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                <label for="event_code" class="block text-xs font-medium uppercase tracking-[0.18em] cny-text-muted">
                     Event code
                 </label>
                 <input
@@ -32,17 +32,18 @@
                     name="event_code"
                     id="event_code"
                     value="{{ form.event_code }}"
-                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 placeholder-slate-500 focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
-                    placeholder="e.g. VALENTINE24"
+                    class="w-full rounded-lg border px-3 py-2 text-sm"
+                    style="background: #fff; border-color: var(--cny-bg-2);"
+                    placeholder="e.g. LANTERN24"
                     required
                 />
                 {% if errors.event_code %}
-                    <p class="text-xs text-pink-400 mt-1">{{ errors.event_code }}</p>
+                    <p class="text-xs cny-text-accent mt-1">{{ errors.event_code }}</p>
                 {% endif %}
             </div>
 
             <div class="space-y-1.5">
-                <label for="nickname" class="block text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                <label for="nickname" class="block text-xs font-medium uppercase tracking-[0.18em] cny-text-muted">
                     Nickname
                 </label>
                 <input
@@ -50,22 +51,23 @@
                     name="nickname"
                     id="nickname"
                     value="{{ form.nickname }}"
-                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 placeholder-slate-500 focus:border-pink-400 focus:outline-none focus:ring-1 focus:ring-pink-400"
+                    class="w-full rounded-lg border px-3 py-2 text-sm"
+                    style="background: #fff; border-color: var(--cny-bg-2);"
                     placeholder="e.g. Alex"
                     required
                 />
                 {% if errors.nickname %}
-                    <p class="text-xs text-pink-400 mt-1">{{ errors.nickname }}</p>
+                    <p class="text-xs cny-text-accent mt-1">{{ errors.nickname }}</p>
                 {% endif %}
             </div>
 
             <div class="flex items-center justify-between gap-3 pt-2">
-                <p class="text-xs text-slate-400">
+                <p class="text-xs cny-text-muted">
                     We will only show results once the host reveals matches.
                 </p>
                 <button
                     type="submit"
-                    class="inline-flex items-center justify-center rounded-lg bg-pink-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-pink-500/40 transition hover:bg-pink-400"
+                    class="inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold cny-btn"
                 >
                     View my match
                 </button>

@@ -1,81 +1,72 @@
 {% extends "base.html" %}
 
-{% block title %}Host Dashboard · Speed Dating{% endblock %}
+{% block title %}Host Dashboard ? Speed Dating{% endblock %}
 
 {% block content %}
 <section class="mx-auto max-w-5xl px-4 py-10 space-y-8">
 
-    <!-- Header -->
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-3xl font-semibold text-slate-50">
+            <h1 class="text-3xl font-semibold">
                 Host Dashboard
             </h1>
-            <p class="text-sm text-slate-400">
+            <p class="text-sm cny-text-muted">
                 Manage events, participants, and matching.
             </p>
         </div>
 
         <a
             href="/admin/"
-            class="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm hover:bg-slate-800"
+            class="inline-flex items-center rounded-lg border px-4 py-2 text-sm cny-card"
         >
             Open Django Admin
         </a>
     </div>
 
-    <!-- Events Grid -->
     <div class="grid gap-6 md:grid-cols-2">
 
         {% for item in event_stats %}
         {% with event=item.event %}
-        <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 space-y-4" data-event-card data-event-id="{{ event.id }}">
+        <div class="rounded-2xl p-6 space-y-4 cny-card" data-event-card data-event-id="{{ event.id }}">
 
             <div class="flex items-start justify-between">
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-100">
+                    <h2 class="text-lg font-semibold">
                         {{ event.name }}
                     </h2>
-                    <p class="text-xs text-slate-500">
+                    <p class="text-xs cny-text-muted">
                         Code: {{ event.code }}
                     </p>
                 </div>
 
-                <span data-event-status-badge class="rounded-full px-2.5 py-1 text-xs font-medium
-                    {% if event.status == 'collecting' %} bg-emerald-500/10 text-emerald-400
-                    {% elif event.status == 'matching' %} bg-yellow-500/10 text-yellow-400
-                    {% elif event.status == 'revealed' %} bg-pink-500/10 text-pink-400
-                    {% else %} bg-slate-700 text-slate-300 {% endif %}
-                ">
+                <span data-event-status-badge class="rounded-full px-2.5 py-1 text-xs font-medium cny-chip">
                     {{ event.get_status_display }}
                 </span>
             </div>
 
-            <!-- Stats -->
             <div class="grid grid-cols-3 gap-3 text-center text-sm">
-                <div class="rounded-lg bg-slate-900 p-3">
-                    <p class="text-xs text-slate-400">Participants</p>
+                <div class="rounded-lg cny-card p-3">
+                    <p class="text-xs cny-text-muted">Participants</p>
                     <p class="font-semibold" data-event-participants>{{ item.participants_count }}</p>
                 </div>
 
-                <div class="rounded-lg bg-slate-900 p-3">
-                    <p class="text-xs text-slate-400">Answered</p>
+                <div class="rounded-lg cny-card p-3">
+                    <p class="text-xs cny-text-muted">Answered</p>
                     <p class="font-semibold" data-event-answered>{{ item.answered_count }}</p>
                 </div>
 
-                <div class="rounded-lg bg-slate-900 p-3">
-                    <p class="text-xs text-slate-400">Status</p>
+                <div class="rounded-lg cny-card p-3">
+                    <p class="text-xs cny-text-muted">Status</p>
                     <p class="font-semibold">{{ event.status }}</p>
                 </div>
             </div>
 
-            <!-- Actions -->
             <div class="flex flex-wrap items-center gap-3 pt-2">
                 {% if event.status != "closed" %}
                 <form method="post" action="{% url 'admin_run_matching' event.id %}" data-run-form>
                     {% csrf_token %}
                     <button
-                        class="rounded-lg bg-yellow-500/90 px-4 py-2 text-xs font-semibold text-black hover:bg-yellow-400 disabled:opacity-60"
+                        class="rounded-lg px-4 py-2 text-xs font-semibold disabled:opacity-60 cny-btn-gold"
                         data-run-button
                         data-status="{{ event.status }}"
                         data-run-url="{% url 'admin_run_matching' event.id %}"
@@ -92,10 +83,11 @@
 
                 <form method="post" action="{% url 'admin_update_status' event.id %}" class="flex items-center gap-2">
                     {% csrf_token %}
-                    <label class="text-xs text-slate-400">Status</label>
+                    <label class="text-xs cny-text-muted">Status</label>
                     <select
                         name="status"
-                        class="rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
+                        class="rounded-lg border px-3 py-2 text-xs"
+                        style="background: #fff; border-color: var(--cny-bg-2);"
                         data-event-status-select
                     >
                         {% for value,label in event.STATUS_CHOICES %}
@@ -105,7 +97,7 @@
                         {% endfor %}
                     </select>
                     <button
-                        class="rounded-lg bg-pink-500 px-4 py-2 text-xs font-semibold hover:bg-pink-400"
+                        class="rounded-lg px-4 py-2 text-xs font-semibold cny-btn"
                     >
                         Update
                     </button>
@@ -115,7 +107,7 @@
         </div>
         {% endwith %}
         {% empty %}
-        <p class="text-slate-500">No events created yet.</p>
+        <p class="cny-text-muted">No events created yet.</p>
         {% endfor %}
 
     </div>
@@ -145,21 +137,31 @@
 
     function setBadge(el, status, label) {
         el.textContent = label || status;
-        el.classList.remove(
-            "bg-emerald-500/10", "text-emerald-400",
-            "bg-yellow-500/10", "text-yellow-400",
-            "bg-pink-500/10", "text-pink-400",
-            "bg-slate-700", "text-slate-300"
-        );
+        var bg = "#f3e0c7";
+        var border = "#e2c49a";
+        var text = "#b4412e";
         if (status === "collecting") {
-            el.classList.add("bg-emerald-500/10", "text-emerald-400");
+            bg = "#f5e1cc";
+            border = "#e5c59d";
+            text = "#c18433";
         } else if (status === "matching") {
-            el.classList.add("bg-yellow-500/10", "text-yellow-400");
+            bg = "#f6dfc2";
+            border = "#e2c08a";
+            text = "#e28f28";
         } else if (status === "revealed") {
-            el.classList.add("bg-pink-500/10", "text-pink-400");
+            bg = "#f7d6cf";
+            border = "#e3a79e";
+            text = "#b4412e";
         } else {
-            el.classList.add("bg-slate-700", "text-slate-300");
+            bg = "#efe2d3";
+            border = "#e0c8ae";
+            text = "#7a5a45";
         }
+        el.style.backgroundColor = bg;
+        el.style.borderColor = border;
+        el.style.color = text;
+        el.style.borderWidth = "1px";
+        el.style.borderStyle = "solid";
     }
 
     function poll() {
