@@ -20,10 +20,15 @@
             --cny-muted: #7a5a45;
             --cny-accent: #be8537;
         }
-        html, body.cny-body {
+        html {
             background: var(--cny-bg);
-            color: var(--cny-dark);
+            height: 100%;
+        }
+        
+        body.cny-body {
+            background: var(--cny-bg);
             min-height: 100%;
+            overscroll-behavior-y: none;
         }
         .cny-card {
             background: color-mix(in srgb, white 86%, var(--cny-bg));
