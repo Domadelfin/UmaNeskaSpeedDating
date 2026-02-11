@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Join Event ? Speed Dating{% endblock %}
+{% block title %}Join Event · Speed Dating{% endblock %}
 
 {% block content %}
 <section class="flex items-center justify-center px-4 py-12">
     <div class="mx-auto w-full max-w-xl space-y-8">
         <div class="space-y-3 text-center">
-            <p class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] cny-chip">
+            <p class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.35em] cny-chip">
                 <span class="h-1.5 w-1.5 rounded-full" style="background: var(--cny-gold-2);"></span>
                 Event joined
             </p>
-            <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">
-                Tell us who you are.
+            <h1 class="text-3xl font-semibold leading-tight sm:text-4xl cny-title">
+                {% if event %}{{ event.name }}{% else %}Join the event{% endif %}
             </h1>
+            <div class="mx-auto h-1 w-16 rounded-full" style="background: linear-gradient(90deg, var(--cny-red-1), var(--cny-gold-2));"></div>
             <p class="text-sm cny-text-muted">
                 These details help us match you with better partners during the rounds.
             </p>

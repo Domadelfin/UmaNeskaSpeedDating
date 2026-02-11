@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.db import transaction
 from django.db.models import Prefetch, Case, When, Value, IntegerField
 from django.http import JsonResponse
+from django.contrib.admin.views.decorators import staff_member_required
 import uuid
 import networkx as nx
 
@@ -17,6 +18,7 @@ def home(request):
 
     if not event:
         return render(request, "core/home.html", {
+            "event": None,
             "errors": {"event": "No active event right now."},
             "form": {
                 "name": "",
@@ -87,6 +89,7 @@ def home(request):
             request,
             "core/home.html",
             {
+                "event": event,
                 "errors": errors,
                 "form": {
                     "name": "",
@@ -101,6 +104,7 @@ def home(request):
         )
     
     return render(request, "core/home.html", {
+        "event": event,
         "form": {},
         "gender_choices": gender_choices,
         "interest_choices": interest_choices,
@@ -166,6 +170,7 @@ def questions(request):
         },
     )
 
+@staff_member_required
 def admin(request):
     events = models.Event.objects.prefetch_related("participants").order_by("-created_at")
     event_stats = []
@@ -180,6 +185,7 @@ def admin(request):
     return render(request, "core/admin.html", {"event_stats": event_stats})
 
 
+@staff_member_required
 def admin_status(request):
     events = models.Event.objects.prefetch_related("participants").order_by("-created_at")
     payload = []
@@ -288,6 +294,7 @@ def profile_status(request):
    
 
 
+@staff_member_required
 def admin_update_status(request, event_id):
     if request.method != "POST":
         return redirect(reverse("admin"))
@@ -312,6 +319,7 @@ def admin_update_status(request, event_id):
     return redirect(reverse("admin"))
 
 
+@staff_member_required
 def admin_run_matching(request, event_id):
     if request.method != "POST":
         return redirect(reverse("admin"))
