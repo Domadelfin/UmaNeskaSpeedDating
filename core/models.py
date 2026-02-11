@@ -28,6 +28,32 @@ class Event(models.Model):
 class Participant(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    class GenderIdentity(models.TextChoices):
+        WOMAN = "woman", "Woman"
+        MAN = "man", "Man"
+        NONBINARY = "nonbinary", "Non-binary"
+        TRANS_WOMAN = "trans_woman", "Trans woman"
+        TRANS_MAN = "trans_man", "Trans man"
+        GENDERQUEER = "genderqueer", "Genderqueer"
+        AGENDER = "agender", "Agender"
+        OTHER = "other", "Another identity"
+
+    class InterestedIn(models.TextChoices):
+        WOMEN = "women", "Women"
+        MEN = "men", "Men"
+        NONBINARY = "nonbinary", "Non-binary people"
+        TRANS_WOMEN = "trans_women", "Trans women"
+        TRANS_MEN = "trans_men", "Trans men"
+        ANY = "any", "Anyone"
+
+    class Bracelet(models.TextChoices):
+        RED = "red", "Red - Single & open to dating"
+        GOLD = "gold", "Gold - Queer"
+        GREEN = "green", "Green - Bi / Pan"
+        PINK = "pink", "Pink - Femme-leaning"
+        BLUE = "blue", "Blue - Masc-leaning"
+        SILVER = "silver", "Silver - Taken / here socially"
+
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
@@ -35,8 +61,9 @@ class Participant(models.Model):
     )
 
     nickname = models.CharField(max_length=100)
-    gender_identity = models.CharField(max_length=50)
+    gender_identity = models.CharField(max_length=50, choices=GenderIdentity.choices)
     interested_in = models.JSONField()
+    bracelet = models.CharField(max_length=20, choices=Bracelet.choices, default=Bracelet.RED)
 
     age = models.IntegerField(null=True, blank=True)
 
@@ -59,6 +86,17 @@ class Participant(models.Model):
                 name="unique_nickname_per_event",
             )
         ]
+
+    @property
+    def interested_in_labels(self):
+        values = self.interested_in or []
+        labels = []
+        for value in values:
+            try:
+                labels.append(self.InterestedIn(value).label)
+            except ValueError:
+                labels.append(str(value))
+        return labels
 
 
 class Question(models.Model):

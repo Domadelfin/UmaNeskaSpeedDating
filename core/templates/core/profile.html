@@ -7,59 +7,70 @@
     <div class="mx-auto w-full max-w-2xl space-y-6">
         <div class="space-y-2 text-center">
             <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
-                Welcome back, {{ participant.nickname }}
+                Welcome, {{ participant.nickname }}!
             </p>
-            <h1 class="text-3xl font-semibold text-slate-50 sm:text-4xl">
-                Your match
-            </h1>
             <p class="text-sm text-slate-300">
                 Event: <span class="text-slate-100 font-medium">{{ event.name }}</span>
                 · Code: <span class="text-slate-100 font-medium">{{ event.code }}</span>
             </p>
         </div>
 
-        <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 sm:p-8 text-center space-y-3">
-            {% if event.status == "matching" %}
-                <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
-                    Get ready
-                </p>
-                <p class="text-sm text-slate-300">
-                    The host is preparing to reveal matches.
-                </p>
-                <div
-                    id="countdown"
-                    class="text-5xl sm:text-6xl font-semibold tracking-wide text-emerald-300"
-                    data-seconds="8"
-                >
-                    8
-                </div>
-                <p class="text-xs text-slate-500">
-                    Keep this page open. Your match will appear after the reveal.
-                </p>
-            {% elif event.status != "revealed" %}
-                <p class="text-sm text-slate-300">
-                    Matches have not been revealed yet.
-                </p>
-                <p class="text-xs text-slate-500">
-                    Current status: {{ event.get_status_display }}
-                </p>
-            {% else %}
-                {% if match %}
-                    <p class="text-xs font-medium uppercase tracking-[0.2em] text-emerald-300">
-                        It's a match
-                    </p>
-                    <p class="text-3xl font-semibold text-slate-50">
-                        {{ match.nickname }}
+        <div
+            id="match-panel"
+            class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 sm:p-8 text-center space-y-3"
+            data-status="{{ event.status }}"
+            data-match="{{ match.nickname|default:'' }}"
+        >
+            <div id="panel-body">
+                {% if event.status == "matching" %}
+                    <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+                        Hang tight
                     </p>
                     <p class="text-sm text-slate-300">
-                        Find them and say hello.
+                        The host is preparing to reveal matches.
+                    </p>
+                    <p class="text-xs text-slate-500">
+                        This will update automatically when matches are revealed.
+                    </p>
+                {% elif event.status != "revealed" %}
+                    <p class="text-sm text-slate-300">
+                        Matches have not been revealed yet.
+                    </p>
+                    <p class="text-xs text-slate-500">
+                        Current status: {{ event.get_status_display }}
                     </p>
                 {% else %}
-                    <p class="text-sm text-slate-300">
-                        Your match isn't ready yet. Check back soon.
-                    </p>
+                    {% if match %}
+                        <div id="reveal-countdown" class="space-y-3">
+                            <p class="text-xs font-medium uppercase tracking-[0.2em] text-pink-200">
+                                Revealing match
+                            </p>
+                            <div
+                                id="countdown"
+                                class="text-5xl sm:text-6xl font-semibold tracking-wide text-emerald-300"
+                                data-seconds="8"
+                            >
+                                8
+                            </div>
+                        </div>
+                        <div id="match-result" class="space-y-2 hidden">
+                            <p class="text-xs font-medium uppercase tracking-[0.2em] text-emerald-300">
+                                It's a match
+                            </p>
+                            <p class="text-3xl font-semibold text-slate-50">
+                                {{ match.nickname }}
+                            </p>
+                            <p class="text-sm text-slate-300">
+                                Find them and say hello.
+                            </p>
+                        </div>
+                    {% else %}
+                        <p class="text-sm text-slate-300">
+                            Your match isn't ready yet. Check back soon.
+                        </p>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+            </div>
         </div>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 text-xs text-slate-400">
@@ -82,11 +93,13 @@
     if (!el) return;
 
     var remaining = parseInt(el.getAttribute("data-seconds"), 10) || 8;
+    var reveal = document.getElementById("reveal-countdown");
+    var result = document.getElementById("match-result");
 
     function tick() {
         if (remaining <= 0) {
-            el.textContent = "Now";
-            setTimeout(function() { window.location.reload(); }, 500);
+            if (reveal) reveal.classList.add("hidden");
+            if (result) result.classList.remove("hidden");
             return;
         }
         el.textContent = remaining;
@@ -95,6 +108,35 @@
     }
 
     tick();
+})();
+</script>
+
+<script>
+(function() {
+    var panel = document.getElementById("match-panel");
+    if (!panel) return;
+
+    var status = panel.getAttribute("data-status");
+    var match = panel.getAttribute("data-match");
+
+    function poll() {
+        fetch("{% url 'profile_status' %}", { credentials: "same-origin" })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                    return;
+                }
+                var nextStatus = data.event_status;
+                var nextMatch = data.match_nickname || "";
+                if (nextStatus !== status || (nextStatus === "revealed" && nextMatch !== match)) {
+                    window.location.reload();
+                }
+            })
+            .catch(function() {});
+    }
+
+    setInterval(poll, 5000);
 })();
 </script>
 {% endblock %}

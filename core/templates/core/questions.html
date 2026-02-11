@@ -18,10 +18,10 @@
 
             <p class="text-sm text-slate-300">
                 You identify as
-                <span class="font-medium text-slate-100">{{ participant.gender_identity }}</span>,
+                <span class="font-medium text-slate-100">{{ participant.get_gender_identity_display }}</span>,
                 and want to meet
                 <span class="font-medium text-slate-100">
-                    {{ participant.interested_in|join:", " }}
+                    {{ participant.interested_in_labels|join:", " }}
                 </span>.
             </p>
         </div>

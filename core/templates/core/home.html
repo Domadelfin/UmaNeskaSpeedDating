@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Join Event · Speed Dating{% endblock %}
+{% block title %}Join Event - Speed Dating{% endblock %}
 
 {% block content %}
 <section class="flex items-center justify-center px-4 py-12">
@@ -54,39 +54,19 @@
                         I identify as
                     </p>
                     <div class="space-y-1.5 text-sm text-slate-200">
-                        <label class="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="woman"
-                                required
-                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
-                                {% if form.gender == "woman" %}checked{% endif %}
-                            />
-                            <span>Woman</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="man"
-                                required
-                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
-                                {% if form.gender == "man" %}checked{% endif %}
-                            />
-                            <span>Man</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="nonbinary"
-                                required
-                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
-                                {% if form.gender == "nonbinary" %}checked{% endif %}
-                            />
-                            <span>Non‑binary / another identity</span>
-                        </label>
+                        {% for value,label in gender_choices %}
+                            <label class="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="gender"
+                                    value="{{ value }}"
+                                    required
+                                    class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                    {% if form.gender == value %}checked{% endif %}
+                                />
+                                <span>{{ label }}</span>
+                            </label>
+                        {% endfor %}
                     </div>
                     {% if errors.gender %}
                         <p class="text-xs text-pink-400 mt-1">{{ errors.gender }}</p>
@@ -95,47 +75,51 @@
 
                 <div class="space-y-2">
                     <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
-                        I’d like to be matched with
+                        I'd like to be matched with
                     </p>
                     <div class="space-y-1.5 text-sm text-slate-200">
-                        <label class="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="preferred_gender"
-                                value="women"
-                                required
-                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
-                                {% if form.preferred_gender == "women" %}checked{% endif %}
-                            />
-                            <span>Women</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="preferred_gender"
-                                value="men"
-                                required
-                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
-                                {% if form.preferred_gender == "men" %}checked{% endif %}
-                            />
-                            <span>Men</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="preferred_gender"
-                                value="any"
-                                required
-                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
-                                {% if form.preferred_gender == "any" %}checked{% endif %}
-                            />
-                            <span>Anyone</span>
-                        </label>
+                        {% for value,label in interest_choices %}
+                            <label class="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="preferred_gender"
+                                    value="{{ value }}"
+                                    required
+                                    class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                    {% if form.preferred_gender == value %}checked{% endif %}
+                                />
+                                <span>{{ label }}</span>
+                            </label>
+                        {% endfor %}
                     </div>
                     {% if errors.preferred_gender %}
                         <p class="text-xs text-pink-400 mt-1">{{ errors.preferred_gender }}</p>
                     {% endif %}
                 </div>
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                    Bracelet color
+                </p>
+                <div class="grid gap-2 sm:grid-cols-2 text-sm text-slate-200">
+                    {% for value,label in bracelet_choices %}
+                        <label class="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="bracelet"
+                                value="{{ value }}"
+                                required
+                                class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-pink-500 focus:ring-pink-500"
+                                {% if form.bracelet == value %}checked{% endif %}
+                            />
+                            <span>{{ label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if errors.bracelet %}
+                    <p class="text-xs text-pink-400 mt-1">{{ errors.bracelet }}</p>
+                {% endif %}
             </div>
 
             <div class="flex items-center justify-between gap-3 pt-2">

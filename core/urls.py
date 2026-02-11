@@ -4,9 +4,11 @@ from . import views
 urlpatterns = [
     path("", views.home, name="home"),
     path("questions/", views.questions, name="questions"),
-    path("admin/", views.admin, name="admin"),
-    path("admin/events/<uuid:event_id>/status/", views.admin_update_status, name="admin_update_status"),
-    path("admin/events/<uuid:event_id>/countdown/", views.admin_reveal_countdown, name="admin_reveal_countdown"),
+    path("host/", views.admin, name="admin"),
+    path("host/status/", views.admin_status, name="admin_status"),
+    path("host/events/<uuid:event_id>/status/", views.admin_update_status, name="admin_update_status"),
+    path("host/events/<uuid:event_id>/match/", views.admin_run_matching, name="admin_run_matching"),
     path("resume/", views.resume, name="resume"),
     path("profile/", views.profile, name="profile"),
+    path("profile/status/", views.profile_status, name="profile_status"),
 ]

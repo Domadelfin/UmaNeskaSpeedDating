@@ -4,11 +4,7 @@ from .models import Participant
 class ParticipantJoinForm(forms.ModelForm):
     
     preferred_gender = forms.ChoiceField(
-        choices = [
-            ("women", "Women"),
-            ("men", "Men"),
-            ("any", "Anyone"),
-        ]
+        choices = Participant.InterestedIn.choices
     )
 
     class Meta:

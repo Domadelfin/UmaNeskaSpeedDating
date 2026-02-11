@@ -27,8 +27,9 @@
     <!-- Events Grid -->
     <div class="grid gap-6 md:grid-cols-2">
 
-        {% for event in events %}
-        <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 space-y-4">
+        {% for item in event_stats %}
+        {% with event=item.event %}
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 space-y-4" data-event-card data-event-id="{{ event.id }}">
 
             <div class="flex items-start justify-between">
                 <div>
@@ -40,7 +41,7 @@
                     </p>
                 </div>
 
-                <span class="rounded-full px-2.5 py-1 text-xs font-medium
+                <span data-event-status-badge class="rounded-full px-2.5 py-1 text-xs font-medium
                     {% if event.status == 'collecting' %} bg-emerald-500/10 text-emerald-400
                     {% elif event.status == 'matching' %} bg-yellow-500/10 text-yellow-400
                     {% elif event.status == 'revealed' %} bg-pink-500/10 text-pink-400
@@ -54,14 +55,12 @@
             <div class="grid grid-cols-3 gap-3 text-center text-sm">
                 <div class="rounded-lg bg-slate-900 p-3">
                     <p class="text-xs text-slate-400">Participants</p>
-                    <p class="font-semibold">{{ event.participants.count }}</p>
+                    <p class="font-semibold" data-event-participants>{{ item.participants_count }}</p>
                 </div>
 
                 <div class="rounded-lg bg-slate-900 p-3">
                     <p class="text-xs text-slate-400">Answered</p>
-                    <p class="font-semibold">
-                        {{ event.participants.filter(answers_complete=True).count }}
-                    </p>
+                    <p class="font-semibold" data-event-answered>{{ item.answered_count }}</p>
                 </div>
 
                 <div class="rounded-lg bg-slate-900 p-3">
@@ -72,12 +71,32 @@
 
             <!-- Actions -->
             <div class="flex flex-wrap items-center gap-3 pt-2">
+                {% if event.status != "closed" %}
+                <form method="post" action="{% url 'admin_run_matching' event.id %}" data-run-form>
+                    {% csrf_token %}
+                    <button
+                        class="rounded-lg bg-yellow-500/90 px-4 py-2 text-xs font-semibold text-black hover:bg-yellow-400 disabled:opacity-60"
+                        data-run-button
+                        data-status="{{ event.status }}"
+                        data-run-url="{% url 'admin_run_matching' event.id %}"
+                        data-reveal-url="{% url 'admin_update_status' event.id %}"
+                    >
+                        {% if event.status == "matching" %}
+                            Reveal matches
+                        {% else %}
+                            Run Matching
+                        {% endif %}
+                    </button>
+                </form>
+                {% endif %}
+
                 <form method="post" action="{% url 'admin_update_status' event.id %}" class="flex items-center gap-2">
                     {% csrf_token %}
                     <label class="text-xs text-slate-400">Status</label>
                     <select
                         name="status"
                         class="rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
+                        data-event-status-select
                     >
                         {% for value,label in event.STATUS_CHOICES %}
                             <option value="{{ value }}" {% if event.status == value %}selected{% endif %}>
@@ -94,6 +113,7 @@
             </div>
 
         </div>
+        {% endwith %}
         {% empty %}
         <p class="text-slate-500">No events created yet.</p>
         {% endfor %}
@@ -101,4 +121,111 @@
     </div>
 
 </section>
+
+<script>
+(function() {
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length === 2) return parts.pop().split(";").shift();
+        return "";
+    }
+
+    function post(url, payload) {
+        return fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            credentials: "same-origin",
+            body: payload || ""
+        });
+    }
+
+    function setBadge(el, status, label) {
+        el.textContent = label || status;
+        el.classList.remove(
+            "bg-emerald-500/10", "text-emerald-400",
+            "bg-yellow-500/10", "text-yellow-400",
+            "bg-pink-500/10", "text-pink-400",
+            "bg-slate-700", "text-slate-300"
+        );
+        if (status === "collecting") {
+            el.classList.add("bg-emerald-500/10", "text-emerald-400");
+        } else if (status === "matching") {
+            el.classList.add("bg-yellow-500/10", "text-yellow-400");
+        } else if (status === "revealed") {
+            el.classList.add("bg-pink-500/10", "text-pink-400");
+        } else {
+            el.classList.add("bg-slate-700", "text-slate-300");
+        }
+    }
+
+    function poll() {
+        fetch("{% url 'admin_status' %}", { credentials: "same-origin" })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                (data.events || []).forEach(function(item) {
+                    var card = document.querySelector('[data-event-id="' + item.id + '"]');
+                    if (!card) return;
+                    var participantsEl = card.querySelector("[data-event-participants]");
+                    var answeredEl = card.querySelector("[data-event-answered]");
+                    var badge = card.querySelector("[data-event-status-badge]");
+                    var select = card.querySelector("[data-event-status-select]");
+                    var runButton = card.querySelector("[data-run-button]");
+
+                    if (participantsEl) participantsEl.textContent = item.participants_count;
+                    if (answeredEl) answeredEl.textContent = item.answered_count;
+                    if (badge) setBadge(badge, item.status, item.status_label);
+                    if (select && select.value !== item.status) select.value = item.status;
+                    if (runButton) {
+                        runButton.setAttribute("data-status", item.status);
+                        if (item.status === "matching") {
+                            runButton.textContent = "Reveal matches";
+                            runButton.disabled = false;
+                        } else if (item.status === "collecting") {
+                            runButton.textContent = "Run Matching";
+                            runButton.disabled = false;
+                        } else if (item.status === "revealed") {
+                            runButton.textContent = "Matches revealed";
+                            runButton.disabled = true;
+                        } else {
+                            runButton.textContent = "Event closed";
+                            runButton.disabled = true;
+                        }
+                    }
+                });
+            })
+            .catch(function() {});
+    }
+
+    document.querySelectorAll("[data-run-form]").forEach(function(form) {
+        form.addEventListener("submit", function(e) {
+            var button = form.querySelector("[data-run-button]");
+            if (!button) return;
+            e.preventDefault();
+
+            var status = button.getAttribute("data-status");
+            button.disabled = true;
+
+            if (status === "collecting") {
+                button.textContent = "Matches are being made, please wait";
+                post(button.getAttribute("data-run-url"))
+                    .then(function() { poll(); })
+                    .catch(function() {});
+            } else if (status === "matching") {
+                button.textContent = "Revealing matches...";
+                post(button.getAttribute("data-reveal-url"), "status=revealed")
+                    .then(function() { poll(); })
+                    .catch(function() {});
+            } else {
+                button.disabled = false;
+            }
+        });
+    });
+
+    setInterval(poll, 5000);
+})();
+</script>
 {% endblock %}
