@@ -16,11 +16,17 @@ class ParticipantAdmin(admin.ModelAdmin):
         "gender_identity",
         "answers_complete",
         "matched_with",
+        "matched_with_secondary",
         "created_at",
     )
     list_filter = ("event", "gender_identity", "answers_complete")
     search_fields = ("nickname",)
-    autocomplete_fields = ("matched_with",)
+    autocomplete_fields = ("matched_with", "matched_with_secondary")
+    actions = ("clear_matches",)
+
+    @admin.action(description="Clear match relations for selected participants")
+    def clear_matches(self, request, queryset):
+        queryset.update(matched_with=None, matched_with_secondary=None)
 
 class OptionInline(admin.TabularInline):
     model = Option

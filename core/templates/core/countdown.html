@@ -16,9 +16,9 @@
         <div
             id="countdown"
             class="text-6xl sm:text-7xl font-semibold tracking-wide text-emerald-300"
-            data-seconds="8"
+            data-seconds="5"
         >
-            8
+            5
         </div>
 
         <p class="text-sm text-slate-300">
@@ -35,7 +35,7 @@
 (function() {
     var el = document.getElementById("countdown");
     var reveal = document.getElementById("reveal-message");
-    var remaining = parseInt(el.getAttribute("data-seconds"), 10) || 8;
+    var remaining = parseInt(el.getAttribute("data-seconds"), 10) || 5;
 
     function tick() {
         if (remaining <= 0) {

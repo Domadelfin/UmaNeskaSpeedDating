@@ -5,10 +5,21 @@ from django.db import transaction
 from django.db.models import Prefetch, Case, When, Value, IntegerField
 from django.http import JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db import connection
 import uuid
 import networkx as nx
 
 from . import models
+
+def healthcheck(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+    except Exception:
+        return JsonResponse({"status": "error", "database": "down"}, status=503)
+    return JsonResponse({"status": "ok", "database": "up"})
+
 
 def home(request):
     event = models.Event.objects.filter(status="collecting").first()
