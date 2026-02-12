@@ -13,7 +13,7 @@
                 Find your match
             </h1>
             <p class="text-sm cny-text-muted">
-                Enter the event code and your nickname to see your match once it is revealed.
+                Enter your nickname to return to your match page.
             </p>
         </div>
 
@@ -23,24 +23,14 @@
         >
             {% csrf_token %}
 
-            <div class="space-y-1.5">
-                <label for="event_code" class="block text-xs font-medium uppercase tracking-[0.18em] cny-text-muted">
-                    Event code
-                </label>
-                <input
-                    type="text"
-                    name="event_code"
-                    id="event_code"
-                    value="{{ form.event_code }}"
-                    class="w-full rounded-lg border px-3 py-2 text-sm"
-                    style="background: #fff; border-color: var(--cny-bg-2);"
-                    placeholder="e.g. LANTERN24"
-                    required
-                />
-                {% if errors.event_code %}
-                    <p class="text-xs cny-text-accent mt-1">{{ errors.event_code }}</p>
-                {% endif %}
-            </div>
+            {% if event %}
+                <p class="text-xs cny-text-muted">
+                    Event: <span class="font-medium cny-text-gold">{{ event.name }}</span>
+                </p>
+            {% endif %}
+            {% if errors.event %}
+                <p class="text-xs cny-text-accent">{{ errors.event }}</p>
+            {% endif %}
 
             <div class="space-y-1.5">
                 <label for="nickname" class="block text-xs font-medium uppercase tracking-[0.18em] cny-text-muted">

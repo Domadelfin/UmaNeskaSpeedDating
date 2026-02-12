@@ -215,41 +215,38 @@ def admin_status(request):
 
 def resume(request):
     errors = {}
+    event = models.Event.objects.order_by("-created_at").first()
 
     if request.method == "POST":
-        code = request.POST.get("event_code", "").strip()
         nickname = request.POST.get("nickname", "").strip()
 
-        if not code:
-            errors["event_code"] = "Please enter the event code."
         if not nickname:
             errors["nickname"] = "Please enter your nickname."
 
+        if not errors and not event:
+            errors["event"] = "No event found."
+
         if not errors:
-            event = models.Event.objects.filter(code__iexact=code).first()
-            if not event:
-                errors["event_code"] = "Event not found."
+            participant = models.Participant.objects.filter(
+                event=event,
+                nickname__iexact=nickname,
+            ).first()
+            if not participant:
+                errors["nickname"] = "Nickname not found."
             else:
-                participant = models.Participant.objects.filter(
-                    event=event,
-                    nickname__iexact=nickname,
-                ).first()
-                if not participant:
-                    errors["nickname"] = "Nickname not found for this event."
-                else:
-                    request.session["participant_id"] = str(participant.id)
-                    request.session["session_id"] = str(event.id)
-                    if not participant.answers_complete:
-                        return redirect(reverse("questions"))
-                    return redirect(reverse("profile"))
+                request.session["participant_id"] = str(participant.id)
+                request.session["session_id"] = str(event.id)
+                if not participant.answers_complete:
+                    return redirect(reverse("questions"))
+                return redirect(reverse("profile"))
 
     return render(
         request,
         "core/resume.html",
         {
+            "event": event,
             "errors": errors,
             "form": {
-                "event_code": request.POST.get("event_code", "") if request.method == "POST" else "",
                 "nickname": request.POST.get("nickname", "") if request.method == "POST" else "",
             },
         },
